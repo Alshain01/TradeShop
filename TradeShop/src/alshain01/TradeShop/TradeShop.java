@@ -1,6 +1,8 @@
 package alshain01.TradeShop;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -8,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import alshain01.Flags.Flags;
@@ -19,12 +22,15 @@ public class TradeShop extends JavaPlugin {
 	protected CustomYML messageReader = new CustomYML(this, "message.yml");
 	
 	//TODO: Create an async task to remove players from the queues after a timeout.
-	protected ConcurrentHashMap<Player, Long> createQueue = new ConcurrentHashMap<Player, Long>();
-	protected ConcurrentHashMap<Player, Long> listQueue = new ConcurrentHashMap<Player, Long>();
-	protected ConcurrentHashMap<Player, Trade> modifyQueue = new ConcurrentHashMap<Player, Trade>();
+	protected ConcurrentHashMap<Player, PlayerCommand> commandQueue = new ConcurrentHashMap<Player, PlayerCommand>();
+	
+	// Keep tabs on the timers so we can kill them cleanly if necessary.
+	//protected Set<PlayerCommand> activeTimers = new HashSet<PlayerCommand>();
+	//protected ConcurrentHashMap<Player, Trade> addQueue = new ConcurrentHashMap<Player, Trade>();	
+	//protected ConcurrentHashMap<Player, Long> listQueue = new ConcurrentHashMap<Player, Long>();
 	
 	protected boolean flags = false;
-
+		
 	@Override
 	public void onEnable() {
 		instance = this;
@@ -48,29 +54,28 @@ public class TradeShop extends JavaPlugin {
 			sender.sendMessage(Message.NoConsoleError.get());
 			return true;
 		}
-		
 		if(args.length < 1) { return false; }
+
+		Player player = (Player)sender;
 		
 		if(cmd.getName().equalsIgnoreCase("tradeshop")) {
 			if(args[0].equalsIgnoreCase("create")) {
 				
 				// Add the creation to the queue
 				sender.sendMessage(Message.CreateMode.get());
-				createQueue.put(((Player)sender), new Date().getTime());
+				commandQueue.put(player, new PlayerCommand(this, player));
 				return true;
 				
 			} else if (args[0].equalsIgnoreCase("add")) {
+				
+				// Add the trade to the queue
 				Trade trade = buildTrade((Player)sender, args);
 				if (trade != null) {
 					sender.sendMessage(Message.ModifyMode.get());
-					modifyQueue.put((Player)sender, trade);
+					commandQueue.put(player, new PlayerCommand(this, player, trade));
 				}
 				return true;
-			} else if (args[0].equalsIgnoreCase("delete")) {
-				//TODO
-			} else if (args[0].equalsIgnoreCase("list")) {
-				
-			}
+			} 
 		}
 		return false;
 	}
@@ -81,26 +86,22 @@ public class TradeShop extends JavaPlugin {
 	 */
 	private Trade buildTrade(Player player, String[] args) {
 		// Check the argument formatting
-		if(args.length != 5 || args.length != 7) {
+		if(args.length != 3 || args.length != 5) {
 			player.sendMessage(getHelp("add"));
 			return null;
 		}
 		
 		// Parse the arguments
 		// Get the materials
-		Material sellItem = Material.getMaterial(args[1]);
 		Material buyItem1 = Material.getMaterial(args[3]);
-		
-		if(sellItem == null) {
-			player.sendMessage(Message.InvalidMaterialError.get()
-					.replaceAll("\\{Material\\}", args[1]));
-		} else if (buyItem1 == null) {
+		if (buyItem1 == null) {
 			player.sendMessage(Message.InvalidMaterialError.get()
 					.replaceAll("\\{Material\\}", args[3]));
+			return null;
 		}
 		
 		Material buyItem2 = null;
-		if(args.length == 7) { 
+		if(args.length == 5) { 
 			buyItem2 = Material.getMaterial(args[5]);
 			if(buyItem2 == null) {
 				player.sendMessage(Message.InvalidMaterialError.get()
@@ -110,21 +111,19 @@ public class TradeShop extends JavaPlugin {
 		}
 
 		//Get the quantities
-		int sellItemQty, buyItem1Qty, buyItem2Qty = 0;
+		int buyItem1Qty, buyItem2Qty = 0;
 		try {
-			sellItemQty = Integer.valueOf(args[2]);
-			buyItem1Qty = Integer.valueOf(args[4]);
-			if(args.length == 7) {
-				buyItem2Qty = Integer.valueOf(args[6]);
+			buyItem1Qty = Integer.valueOf(args[2]);
+			if(args.length == 5) {
+				buyItem2Qty = Integer.valueOf(args[4]);
 			}
 		} catch (NumberFormatException ex) {
 			player.sendMessage(getHelp("add"));
 			return null;
 		}
 		
-		// Acquire the trade.
-	
-		return new Trade(sellItem, buyItem1, buyItem2, sellItemQty, buyItem1Qty, buyItem2Qty);
+		// Return the trade.
+		return new Trade(new ItemStack(buyItem1, buyItem1Qty), new ItemStack(buyItem2, buyItem2Qty));
 	}
 	
 	/*

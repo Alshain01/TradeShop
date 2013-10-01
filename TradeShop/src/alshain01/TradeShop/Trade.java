@@ -1,64 +1,25 @@
 package alshain01.TradeShop;
 
-import java.util.Date;
-
-import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
 public class Trade {
-	private long createTime;
-	private TradeItem[] items = new TradeItem[3];
+	private ItemStack[] tradeItems = new ItemStack[3];
 	
-	public class TradeItem {
-		private Material item;
-		private int quantity;
-		
-		public int getQuantity() {
-			return quantity;
-		}
-		
-		public Material getItem() {
-			return item;
-		}
+	public Trade(ItemStack buyItem1, ItemStack buyItem2) {
+		this.tradeItems[0] = buyItem1;
+		this.tradeItems[1] = buyItem2;
 	}
 	
-	public Trade(Material sellItem, Material buyItem, int sellQty, int buyQty) {
-		items[0].item  = buyItem;
-		items[1].item  = null;
-		items[2].item = sellItem;
-		
-		items[0].quantity = buyQty;
-		items[1].quantity = 0;
-		items[2].quantity = sellQty;
-		
-		this.createTime = new Date().getTime();
+	public ItemStack getSellItem() {
+		return this.tradeItems[2];
 	}
 	
-	public Trade(Material sellItem, Material buyItem1, Material buyItem2, int sellQty, int buyQty1, int buyQty2) {
-		items[0].item  = buyItem1;
-		items[1].item  = buyItem2;
-		items[2].item = sellItem;
-		
-		items[0].quantity = buyQty1;
-		items[1].quantity = buyQty2;
-		items[2].quantity = sellQty;
-
-		
-		this.createTime = new Date().getTime();
+	protected void setSellItem(ItemStack sellItem) {
+		this.tradeItems[2] = sellItem;
 	}
 	
-	public TradeItem getSellItem() {
-		return items[2];
-	}
-	
-	public TradeItem getBuyItem1() {
-		return items[0];
-	}
-	
-	public TradeItem getBuyItem2() {
-		return items[1];
-	}
-	
-	public long getCreationTime() {
-		return createTime;
+	public ItemStack getBuyItem(int index) {
+		if(index < 0 || index > 1) { return null; }
+		return this.tradeItems[index];
 	}
 }

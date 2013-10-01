@@ -1,0 +1,4 @@
+TradeShop:
+  # The total time to wait before abandoning a command.
+  # Server ticks (~1200 = 1 min)
+  CommandTimeout: 2400

@@ -2,19 +2,21 @@ name: TradeShop
 version: 0.0.1
 description: Plugin that allows players to create a trade based shop.
 authors: [Alshain01, Connick Shields]
-#website: http://
+website: http://dev.bukkit.org/bukkit-plugins/tradeshop/
 main: alshain01.TradeShop.TradeShop
 softdepend: [Flags]
 commands:
   tradeshop:
-    description: Allows you to perform actions on TradeShops.
+    description: Allows you to create and add trades to a TradeShop.
     permission: tradeshop.user
-    usage: /tradeshop <create|add|delete>
-    alisases: ss
+    usage: /tradeshop <create|add|admin>
+    alisases: ts
 permissions:
   tradeshop.user:
     description: Gives access to create a TradeShop.
     default: true
   tradeshop.admin:
-    description: Allows a user to view and destroy any TradeShop chest, regardless of owner.
+    description: Allows a user access owner actions for any TradeShop chest.
     default: op
+    children:
+      tradeshop.user: true

@@ -24,7 +24,7 @@ public class ShopManager implements Listener {
 		if(e.getClickedBlock().getType() != Material.CHEST) { return; }
 		
 		// Is the player in "creation mode"?
-		if(!TradeShop.instance.createQueue.containsKey(e.getPlayer())) { return; }
+		if(!TradeShop.instance.createQueue.contains(e.getPlayer())) { return; }
 		
 		// Handle the shop creation flag
 		if(TradeShop.instance.flags) {
