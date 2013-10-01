@@ -26,7 +26,7 @@ public class PlayerCommand extends BukkitRunnable {
 	 */
 	@Override
 	public void run() {
-		player.sendMessage(Message.ActionTimeout.get());
+		player.sendMessage(Message.CommandTimeout.get());
 		TradeShop.instance.commandQueue.remove(player.getName());
 	}
 	

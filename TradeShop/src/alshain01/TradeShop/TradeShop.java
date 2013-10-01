@@ -1,7 +1,9 @@
 package alshain01.TradeShop;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -20,6 +22,7 @@ public class TradeShop extends JavaPlugin {
 	protected CustomYML shopData = new CustomYML(this, "data.yml");
 	protected CustomYML messageReader = new CustomYML(this, "message.yml");
 	
+	protected Set<String> adminMode = new HashSet<String>(); 
 	protected ConcurrentHashMap<String, PlayerCommand> commandQueue = new ConcurrentHashMap<String, PlayerCommand>();
 
 	protected boolean flags = false;
@@ -59,27 +62,52 @@ public class TradeShop extends JavaPlugin {
 			return true;
 		}
 		if(args.length < 1) { return false; }
-
 		Player player = (Player)sender;
 		
 		if(cmd.getName().equalsIgnoreCase("tradeshop")) {
 			if(args[0].equalsIgnoreCase("create")) {
 				
-				// Add the creation to the queue
-				sender.sendMessage(Message.CreateMode.get());
+				/*
+				 *  Add the creation to the queue
+				 */
+				if(commandQueue.containsKey(player.getName())) { commandQueue.get(player.getName()).remove(); }
+				player.sendMessage(Message.CreateMode.get());
 				commandQueue.put(player.getName(), new PlayerCommand(this, player));
 				return true;
 				
 			} else if (args[0].equalsIgnoreCase("add")) {
 				
-				// Add the trade to the queue
-				Trade trade = buildTrade((Player)sender, args);
+				/*
+				 *  Add the trade to the queue
+				 */
+				Trade trade = buildTrade(player, args);
 				if (trade != null) {
-					sender.sendMessage(Message.ModifyMode.get());
+					
+					if(commandQueue.containsKey(player.getName())) { commandQueue.get(player.getName()).remove(); }
+					player.sendMessage(Message.ModifyMode.get());
 					commandQueue.put(player.getName(), new PlayerCommand(this, player, trade));
 				}
 				return true;
-			} 
+
+			} else if (args[0].equalsIgnoreCase("admin")) {
+
+				/*
+				 *  Add or remove a player from admin mode.
+				 */
+				if(!player.hasPermission("tradeshop.admin")) {
+					player.sendMessage(Message.PermError.get());
+				} else {
+					if(adminMode.contains(player.getName())) {
+						player.sendMessage(Message.ExitAdminMode.get());
+						adminMode.remove(player.getName());
+					} else {
+						player.sendMessage(Message.EnterAdminMode.get());
+						adminMode.add(player.getName());
+					}
+				}
+				return true;
+				
+			}
 		}
 		return false;
 	}
@@ -97,19 +125,19 @@ public class TradeShop extends JavaPlugin {
 		
 		// Parse the arguments
 		// Get the materials
-		Material buyItem1 = Material.getMaterial(args[3]);
+		Material buyItem1 = Material.getMaterial(args[1]);
 		if (buyItem1 == null) {
 			player.sendMessage(Message.InvalidMaterialError.get()
-					.replaceAll("\\{Material\\}", args[3]));
+					.replaceAll("\\{Material\\}", args[1]));
 			return null;
 		}
 		
 		Material buyItem2 = null;
 		if(args.length == 5) { 
-			buyItem2 = Material.getMaterial(args[5]);
+			buyItem2 = Material.getMaterial(args[3]);
 			if(buyItem2 == null) {
 				player.sendMessage(Message.InvalidMaterialError.get()
-						.replaceAll("\\{Material\\}", args[5]));
+						.replaceAll("\\{Material\\}", args[3]));
 				return null;
 			}
 		}
@@ -134,7 +162,7 @@ public class TradeShop extends JavaPlugin {
 	 * Returns a custom help for individual sub-commands
 	 */
 	private String getHelp(String action) {
-		if(action.equalsIgnoreCase("add")) { return "/tradeshop add <SellMaterial> <SellQuantity> <BuyMaterial> <BuyQuantity> [BuyMaterial] [BuyQuantity]"; }
+		if(action.equalsIgnoreCase("add")) { return "/tradeshop add <BuyMaterial> <BuyQuantity> [BuyMaterial] [BuyQuantity]"; }
 		else { return "/tradeshop remove <id>"; }
 	}
 }

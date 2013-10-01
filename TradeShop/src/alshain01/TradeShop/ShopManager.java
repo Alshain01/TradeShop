@@ -61,8 +61,7 @@ public class ShopManager implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	private void onBlockBreak(BlockBreakEvent e) {
 		if(e.getBlock().getType() != Material.CHEST) { return; }
-		// TODO: Change this to an admin mode so admins don't accidentally kill shops (similar to /ignoreclaims in GriefPrevention)
-		if(e.getPlayer().hasPermission("simpleshop.admin")) { return; }
+		if(TradeShop.instance.adminMode.contains(e.getPlayer().getName())) { return; }
 		
 		String blockLoc = e.getBlock().getLocation().toString();
 		ConfigurationSection data = TradeShop.instance.shopData.getConfig().getConfigurationSection("Shops");

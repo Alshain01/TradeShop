@@ -9,7 +9,7 @@ public class Trade {
 	private ItemStack[] tradeItems = new ItemStack[3];
 
 	/**
-	 * Creates a new trade.
+	 * Creates a new trade to be finalized by chest drop.
 	 * 
 	 * @param buyItem1 The required item for trade.
 	 * @param buyItem2 The optional item for trade.
@@ -17,6 +17,18 @@ public class Trade {
 	public Trade(ItemStack buyItem1, ItemStack buyItem2) {
 		this.tradeItems[0] = buyItem1;
 		this.tradeItems[1] = buyItem2;
+	}
+	
+	/**
+	 * Creates an existing trade.
+	 * 
+	 * @param buyItem1 The required item for trade.
+	 * @param buyItem2 The optional item for trade.
+	 */
+	public Trade(ItemStack buyItem1, ItemStack buyItem2, ItemStack sellItem) {
+		this.tradeItems[0] = buyItem1;
+		this.tradeItems[1] = buyItem2;
+		this.tradeItems[2] = sellItem;
 	}
 	
 	/**
