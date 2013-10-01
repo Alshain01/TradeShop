@@ -4,8 +4,6 @@ import org.bukkit.ChatColor;
 
 /**
 * Class for retrieving localized messages.
-*
-* @author Alshain01
 */
 public enum Message {
 	// Errors

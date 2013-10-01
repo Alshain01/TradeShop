@@ -1,8 +1,7 @@
 package alshain01.TradeShop;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -21,14 +20,8 @@ public class TradeShop extends JavaPlugin {
 	protected CustomYML shopData = new CustomYML(this, "data.yml");
 	protected CustomYML messageReader = new CustomYML(this, "message.yml");
 	
-	//TODO: Create an async task to remove players from the queues after a timeout.
-	protected ConcurrentHashMap<Player, PlayerCommand> commandQueue = new ConcurrentHashMap<Player, PlayerCommand>();
-	
-	// Keep tabs on the timers so we can kill them cleanly if necessary.
-	//protected Set<PlayerCommand> activeTimers = new HashSet<PlayerCommand>();
-	//protected ConcurrentHashMap<Player, Trade> addQueue = new ConcurrentHashMap<Player, Trade>();	
-	//protected ConcurrentHashMap<Player, Long> listQueue = new ConcurrentHashMap<Player, Long>();
-	
+	protected ConcurrentHashMap<String, PlayerCommand> commandQueue = new ConcurrentHashMap<String, PlayerCommand>();
+
 	protected boolean flags = false;
 		
 	@Override
@@ -47,6 +40,17 @@ public class TradeShop extends JavaPlugin {
 					"\\{Player\\} You are not allowed to use a " + plugin + "in \\{World\\}");
 		}
 	}
+
+	@Override
+	public void onDisable() {
+		//Kill the active timers cleanly.
+		Iterator<Entry<String, PlayerCommand>> it = commandQueue.entrySet().iterator();
+		while (it.hasNext()) {
+			PlayerCommand cmd = (PlayerCommand)it.next();
+			cmd.cancel();
+		}
+		commandQueue.clear();
+	}
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String args[]) {
@@ -63,7 +67,7 @@ public class TradeShop extends JavaPlugin {
 				
 				// Add the creation to the queue
 				sender.sendMessage(Message.CreateMode.get());
-				commandQueue.put(player, new PlayerCommand(this, player));
+				commandQueue.put(player.getName(), new PlayerCommand(this, player));
 				return true;
 				
 			} else if (args[0].equalsIgnoreCase("add")) {
@@ -72,7 +76,7 @@ public class TradeShop extends JavaPlugin {
 				Trade trade = buildTrade((Player)sender, args);
 				if (trade != null) {
 					sender.sendMessage(Message.ModifyMode.get());
-					commandQueue.put(player, new PlayerCommand(this, player, trade));
+					commandQueue.put(player.getName(), new PlayerCommand(this, player, trade));
 				}
 				return true;
 			} 

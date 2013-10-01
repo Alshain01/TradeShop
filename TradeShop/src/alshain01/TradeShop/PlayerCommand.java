@@ -4,6 +4,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+/**
+ * Self-cleaning class for storing pending commands
+ */
 public class PlayerCommand extends BukkitRunnable {
 	CommandAction action;
 	Player player;
@@ -18,13 +21,13 @@ public class PlayerCommand extends BukkitRunnable {
 	}
 	
 	/**
-	 * Public due to override.
+	 * Public due to override requirement.
 	 * Use constructor, do not run directly.
 	 */
 	@Override
 	public void run() {
 		player.sendMessage(Message.ActionTimeout.get());
-		TradeShop.instance.commandQueue.remove(player);
+		TradeShop.instance.commandQueue.remove(player.getName());
 	}
 	
 	/**
@@ -72,5 +75,14 @@ public class PlayerCommand extends BukkitRunnable {
 	 */
 	public Trade getTrade() {
 		return trade;
+	}
+	
+	/**
+	 * Removes a player command that has been processed
+	 * before the timout occurs.
+	 */
+	public void remove() {
+		this.cancel();
+		TradeShop.instance.commandQueue.remove(player.getName());
 	}
 }

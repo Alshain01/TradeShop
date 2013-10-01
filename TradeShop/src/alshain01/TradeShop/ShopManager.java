@@ -24,7 +24,7 @@ public class ShopManager implements Listener {
 		if(e.getClickedBlock().getType() != Material.CHEST) { return; }
 		
 		// Is the player in "creation mode"?
-		if(!TradeShop.instance.createQueue.contains(e.getPlayer())) { return; }
+		if(!TradeShop.instance.commandQueue.containsKey(e.getPlayer().getName())) { return; }
 		
 		// Handle the shop creation flag
 		if(TradeShop.instance.flags) {
@@ -52,7 +52,7 @@ public class ShopManager implements Listener {
 		data.set(blockLoc + ".Owner", e.getPlayer().getName());
 		data.set(blockLoc + ".NextID", 0);
 		e.getPlayer().sendMessage(Message.ShopCreated.get());
-		TradeShop.instance.createQueue.remove(e.getPlayer());
+		TradeShop.instance.commandQueue.get(e.getPlayer().getName()).remove();
 	}
 	
 	/*
@@ -61,6 +61,7 @@ public class ShopManager implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	private void onBlockBreak(BlockBreakEvent e) {
 		if(e.getBlock().getType() != Material.CHEST) { return; }
+		// TODO: Change this to an admin mode so admins don't accidentally kill shops (similar to /ignoreclaims in GriefPrevention)
 		if(e.getPlayer().hasPermission("simpleshop.admin")) { return; }
 		
 		String blockLoc = e.getBlock().getLocation().toString();
