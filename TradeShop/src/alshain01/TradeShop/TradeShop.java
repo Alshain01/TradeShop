@@ -7,9 +7,12 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,10 +22,10 @@ import alshain01.Flags.Flags;
 
 public class TradeShop extends JavaPlugin {
 	public static TradeShop instance;
-	protected CustomYML shopData = new CustomYML(this, "data.yml");
 	protected CustomYML messageReader = new CustomYML(this, "message.yml");
-	
+
 	protected Set<String> adminMode = new HashSet<String>(); 
+	protected ConcurrentHashMap<Location, Shop> shopData = new ConcurrentHashMap<Location, Shop>();
 	protected ConcurrentHashMap<String, PlayerCommand> commandQueue = new ConcurrentHashMap<String, PlayerCommand>();
 
 	protected boolean flags = false;
@@ -53,6 +56,8 @@ public class TradeShop extends JavaPlugin {
 			cmd.cancel();
 		}
 		commandQueue.clear();
+		
+		writeShops();
 	}
 	
 	@Override
@@ -113,10 +118,10 @@ public class TradeShop extends JavaPlugin {
 	}
 	
 	/*
-	 * Builds a trade from arguments
+	 * Builds a trade from command arguments
 	 * @return Null if the trade could not be built (player is notified)
 	 */
-	private Trade buildTrade(Player player, String[] args) {
+	private static Trade buildTrade(Player player, String[] args) {
 		// Check the argument formatting
 		if(args.length != 3 || args.length != 5) {
 			player.sendMessage(getHelp("add"));
@@ -161,8 +166,52 @@ public class TradeShop extends JavaPlugin {
 	/*
 	 * Returns a custom help for individual sub-commands
 	 */
-	private String getHelp(String action) {
+	private static String getHelp(String action) {
 		if(action.equalsIgnoreCase("add")) { return "/tradeshop add <BuyMaterial> <BuyQuantity> [BuyMaterial] [BuyQuantity]"; }
 		else { return "/tradeshop remove <id>"; }
+	}
+	
+	/*
+	 * Writes all shops in memory to the dataStore
+	 */
+	private void writeShops() {
+		FileConfiguration shopDataStore = new CustomYML(this, "data.yml").getConfig();
+		shopDataStore.set("Shop", null);
+		
+		Iterator<Entry<Location, Shop>> it = shopData.entrySet().iterator();
+		while (it.hasNext()) {
+			Entry<Location, Shop> shop = it.next();
+			((Shop)shop).write(shopDataStore.getConfigurationSection("Shop." + shop.getKey().toString()));
+		}
+	}
+	
+	/*
+	 * Reads all shops into memory.
+	 */
+	private ConcurrentHashMap<Location, Shop> readShops() {
+		ConcurrentHashMap<Location, Shop> shopData = new ConcurrentHashMap<Location, Shop>();
+		ConfigurationSection dataStore = new CustomYML(this, "data.yml").getConfig().getConfigurationSection("Shop");
+		
+		for(String s : dataStore.getKeys(false)) {
+			Location location = stringToLocation(s);
+			ConfigurationSection shopDataStore = dataStore.getConfigurationSection(s);
+			Shop shop = new Shop(dataStore.getString("Owner"));
+			
+			for(String t :)
+			
+		}
+	}
+	
+	/*
+	 * Converts Location.toString back to Location
+	 * This is unguarded against improper strings
+	 */
+	private Location stringToLocation(String location) {
+		String[] elements = location.split(",");
+		String[] values = new String[elements.length];
+		for(int i=0; i < elements.length; i++) {
+			values[i] = elements[i].split("=")[1]; 
+		}
+		return new Location(this.getServer().getWorld(values[0]), Double.valueOf(values[1]), Double.valueOf(values[2]), Double.valueOf(values[3]), Float.valueOf(values[4]), Float.valueOf(values[5]));
 	}
 }

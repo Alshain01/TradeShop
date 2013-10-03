@@ -1,7 +1,7 @@
 name: TradeShop
 version: 0.0.1
 description: Plugin that allows players to create a trade based shop.
-authors: [Alshain01, Connick Shields]
+authors: [Alshain01, TheSabreSlicer]
 website: http://dev.bukkit.org/bukkit-plugins/tradeshop/
 main: alshain01.TradeShop.TradeShop
 softdepend: [Flags]

@@ -79,7 +79,7 @@ public class PlayerCommand extends BukkitRunnable {
 	
 	/**
 	 * Removes a player command that has been processed
-	 * before the timout occurs.
+	 * before the timeout occurs.
 	 */
 	public void remove() {
 		this.cancel();

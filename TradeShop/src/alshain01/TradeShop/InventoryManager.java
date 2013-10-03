@@ -27,11 +27,11 @@ public class InventoryManager implements Listener {
 	/*
 	 * Returns true if the provided inventory belongs to a trade shop
 	 */
-	private boolean isTradeShop(Inventory inventory) {
+	private static boolean isTradeShop(Inventory inventory) {
 		if(inventory.getHolder() instanceof Block) {
 			Block block = (Block)inventory.getHolder();
 			if(block.getType()== Material.CHEST) {
-				ConfigurationSection shop = TradeShop.instance.shopData.getConfig().getConfigurationSection("TradeShop");
+				ConfigurationSection shop = TradeShop.instance.shopDataStore.getConfig().getConfigurationSection("TradeShop");
 				return shop.getKeys(false).contains(block.getLocation().toString());
 			}
 		}
@@ -43,18 +43,18 @@ public class InventoryManager implements Listener {
 	 * Dragging will cause issues with the design so it's not allowed.
 	 */
 	@EventHandler(priority = EventPriority.LOWEST)
-	private void onInventoryDrag(InventoryDragEvent e) {
+	private static void onInventoryDrag(InventoryDragEvent e) {
 		if(isTradeShop(e.getInventory())) {
 			e.setCancelled(true);
 		}
 	}
 	
 	@EventHandler(priority = EventPriority.LOWEST)
-	private void onInventoryOpenEvent(InventoryOpenEvent e) {
+	private static  void onInventoryOpenEvent(InventoryOpenEvent e) {
 		if(!isTradeShop(e.getInventory())) { return; }
 		
 		Chest shop = (Chest)e.getInventory().getHolder();
-		ConfigurationSection shopData = TradeShop.instance.shopData.getConfig().getConfigurationSection("TradeShop." + shop.getLocation().toString());
+		ConfigurationSection shopData = TradeShop.instance.shopDataStore.getConfig().getConfigurationSection("TradeShop." + shop.getLocation().toString());
 		String owner = shopData.getString((shop.getLocation().toString()) + ".Owner");
 		
 		if(!TradeShop.instance.adminMode.contains(e.getPlayer().getName()) &&
@@ -83,7 +83,7 @@ public class InventoryManager implements Listener {
 	 * Handles adding items to a shop
 	 */
 	@EventHandler(priority = EventPriority.LOWEST)
-	private void onInventoryAdd(InventoryClickEvent e) {
+	private static void onInventoryAdd(InventoryClickEvent e) {
 		if(!isTradeShop(e.getInventory())) { return; }
 
 		// You must add/remove all or none of an item stack.
@@ -110,7 +110,7 @@ public class InventoryManager implements Listener {
 		}
 		
 		Chest shop = (Chest)e.getInventory().getHolder();
-		ConfigurationSection shopData = TradeShop.instance.shopData.getConfig().getConfigurationSection("TradeShop." + shop.getLocation().toString());
+		ConfigurationSection shopData = TradeShop.instance.shopDataStore.getConfig().getConfigurationSection("TradeShop." + shop.getLocation().toString());
 
 		//TODO
 	}
@@ -119,13 +119,13 @@ public class InventoryManager implements Listener {
 	 * Handles removing items from a shop
 	 */
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	private void onInventoryRemove(InventoryClickEvent e) {
+	private static  void onInventoryRemove(InventoryClickEvent e) {
 		if(!isTradeShop(e.getInventory())) { return; }
 		
 		// Thanks to the onInventoryAdd, we can't be here if they aren't picking up an item stack.
 		
 		Chest shop = (Chest)e.getInventory().getHolder();
-		ConfigurationSection shopData = TradeShop.instance.shopData.getConfig().getConfigurationSection("TradeShop." + shop.getLocation().toString());
+		ConfigurationSection shopData = TradeShop.instance.shopDataStore.getConfig().getConfigurationSection("TradeShop." + shop.getLocation().toString());
 		
 		if(shopData.getKeys(false).contains(String.valueOf(e.getSlot()))) {
 			// The item slot was an assigned trade, so remove it.

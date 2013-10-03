@@ -1,5 +1,10 @@
 package alshain01.TradeShop;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -55,5 +60,26 @@ public class Trade {
 	public ItemStack getBuyItem(int index) {
 		if(index < 0 || index > 1) { return null; }
 		return this.tradeItems[index];
+	}
+	
+	/**
+	 * Returns true if the configured trade can be a valid transaction
+	 * 
+	 * @return True if the trade is valid
+	 */
+	public boolean isValid() {
+		if (tradeItems[0] != null && tradeItems[2] != null) { return true; }
+		return false;
+	}
+	
+	/*
+	 * Writes the trade to the provided configuration section
+	 */
+	protected void write(ConfigurationSection data, String path) {
+		List<Map<String, Object>> tradeList = new ArrayList<Map<String, Object>>();
+		for(ItemStack i : tradeItems) {
+			tradeList.add(i.serialize());
+		}
+		data.set(path, tradeList);
 	}
 }

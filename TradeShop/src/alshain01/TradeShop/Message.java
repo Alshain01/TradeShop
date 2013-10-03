@@ -7,7 +7,7 @@ import org.bukkit.ChatColor;
 */
 public enum Message {
 	// Errors
-	NoConsoleError, InvalidMaterialError, ShopExistsError, RemoveShopError, PermError,
+	NoConsoleError, InvalidMaterialError, ShopExistsError, TradeExistsError, RemoveShopError, PermError,
 	CommandTimeout, TradeRemoved,
 	TradeShopRemoved, CreateMode, ModifyMode, ShopCreated, EnterAdminMode, ExitAdminMode;
 	

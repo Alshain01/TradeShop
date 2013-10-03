@@ -2,6 +2,7 @@ package alshain01.TradeShop;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -13,18 +14,20 @@ import alshain01.Flags.Director;
 import alshain01.Flags.Flag;
 import alshain01.Flags.Flags;
 import alshain01.Flags.area.Area;
+import alshain01.TradeShop.PlayerCommand.CommandAction;
 
 public class ShopManager implements Listener {
 	/*
 	 *  Handles the creation of a shop
 	 */
 	@EventHandler(priority = EventPriority.MONITOR)
-	private void onPlayerInteract(PlayerInteractEvent e) {
-		if(e.getAction() != Action.RIGHT_CLICK_BLOCK) { return; }
+	private static void onPlayerInteract(PlayerInteractEvent e) {
+		if(e.getAction() != Action.LEFT_CLICK_BLOCK) { return; }
 		if(e.getClickedBlock().getType() != Material.CHEST) { return; }
 		
 		// Is the player in "creation mode"?
-		if(!TradeShop.instance.commandQueue.containsKey(e.getPlayer().getName())) { return; }
+		PlayerCommand command = TradeShop.instance.commandQueue.get(e.getPlayer().getName());
+		if(command == null || command.action != CommandAction.CREATE) { return; }
 		
 		// Handle the shop creation flag
 		if(TradeShop.instance.flags) {
@@ -39,56 +42,46 @@ public class ShopManager implements Listener {
 			}
 		}
 	
-		String blockLoc = e.getClickedBlock().getLocation().toString();
-		ConfigurationSection data = TradeShop.instance.shopData.getConfig().getConfigurationSection("Shops");
-		
 		// Is that chest already a shop?
-		if(data.getKeys(false).contains(blockLoc)) {
+		if(TradeShop.instance.shopData.containsKey(e.getClickedBlock().getLocation())) {
 			e.getPlayer().sendMessage(Message.ShopExistsError.get());
 			return;
 		}
 		
 		// Everything seems to be in order, create the shop.
-		data.set(blockLoc + ".Owner", e.getPlayer().getName());
-		data.set(blockLoc + ".NextID", 0);
+		TradeShop.instance.shopData.put(e.getClickedBlock().getLocation(), new Shop(e.getPlayer().getName()));
 		e.getPlayer().sendMessage(Message.ShopCreated.get());
 		TradeShop.instance.commandQueue.get(e.getPlayer().getName()).remove();
 	}
 	
 	/*
-	 * Handles the shop destruction security
+	 * Handles the shop destruction by a player security
 	 */
 	@EventHandler(priority = EventPriority.LOWEST)
-	private void onBlockBreak(BlockBreakEvent e) {
+	private static void onBlockBreak(BlockBreakEvent e) {
 		if(e.getBlock().getType() != Material.CHEST) { return; }
 		if(TradeShop.instance.adminMode.contains(e.getPlayer().getName())) { return; }
 		
-		String blockLoc = e.getBlock().getLocation().toString();
-		ConfigurationSection data = TradeShop.instance.shopData.getConfig().getConfigurationSection("Shops");
-		
 		// Check to see if the chest is one that TradeShop claims domain over.
-		if(data.getKeys(false).contains(blockLoc.toString())) {
-			// Check to see if the player can destroy this block
-			String owner = data.getString(blockLoc.toString() + ".Owner");
-			if(!owner.equalsIgnoreCase(e.getPlayer().getName())) {
-				e.getPlayer().sendMessage(Message.RemoveShopError.get()
-						.replaceAll("\\{Owner\\}", owner));
-				e.setCancelled(true);
-			}
-		}
+		if(!TradeShop.instance.shopData.containsKey(e.getBlock().getLocation())) { return; }
+		Shop shop = TradeShop.instance.shopData.get(e.getBlock().getLocation());
+		
+		// Check to see if the player can destroy this block
+		if(shop.getOwner().equals(e.getPlayer().getName())) { return; }
+		
+		// This player can't destroy this shop.
+		e.getPlayer().sendMessage(Message.RemoveShopError.get()
+				.replaceAll("\\{Owner\\}", shop.getOwner()));
+		e.setCancelled(true);
 	}
 	
 	/*
 	 * Handles the shop removal
 	 */
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	private void onBlockBroken(BlockBreakEvent e) {
-		String blockLoc = e.getBlock().getLocation().toString();
-		ConfigurationSection data = TradeShop.instance.shopData.getConfig().getConfigurationSection("Shops");
+	private static void onBlockBroken(BlockBreakEvent e) {
+		if(!TradeShop.instance.shopData.containsKey(e.getBlock().getLocation())) { return; }
 		
-		if(data.getKeys(false).contains(blockLoc.toString())) {
-			e.getPlayer().sendMessage(Message.TradeShopRemoved.get());
-			data.set(blockLoc, null);
-		}
+		TradeShop.instance.shopData.remove(e.getBlock().getLocation());
 	}
 }
