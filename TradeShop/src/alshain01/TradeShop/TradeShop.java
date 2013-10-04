@@ -2,6 +2,8 @@ package alshain01.TradeShop;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,6 +47,8 @@ public class TradeShop extends JavaPlugin {
 	                "\\{Player\\} You are not allowed to use a " + plugin + "in \\{Owner\\}''s \\{AreaType\\}.",
 					"\\{Player\\} You are not allowed to use a " + plugin + "in \\{World\\}");
 		}
+		
+		this.shopData = readShops();
 	}
 
 	@Override
@@ -195,11 +199,22 @@ public class TradeShop extends JavaPlugin {
 		for(String s : dataStore.getKeys(false)) {
 			Location location = stringToLocation(s);
 			ConfigurationSection shopDataStore = dataStore.getConfigurationSection(s);
-			Shop shop = new Shop(dataStore.getString("Owner"));
+			Shop shop = new Shop(shopDataStore.getString("Owner"));
 			
-			//for(String t :)
-			
+			for(String t : shopDataStore.getKeys(false)) {
+				if(t.equals("Owner")) { continue; }
+				List<Map<?,?>> tradeMap = shopDataStore.getMapList(t);
+				for(int x = 0; x < 3; x++) {
+					@SuppressWarnings("unchecked")
+					Trade trade = new Trade((ItemStack.deserialize((Map<String, Object>)tradeMap.get(x).get(0))),
+							(ItemStack.deserialize((Map<String, Object>)tradeMap.get(x).get(1))),
+							(ItemStack.deserialize((Map<String, Object>)tradeMap.get(x).get(2))));
+					shop.addTrade(trade);
+				}
+			}
+			shopData.put(location, shop);
 		}
+		return shopData;
 	}
 	
 	/*
