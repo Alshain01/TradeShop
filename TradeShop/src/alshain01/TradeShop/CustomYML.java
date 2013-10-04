@@ -9,7 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * 
  * @author bukkit.org
  */
-public class CustomYML {
+class CustomYML {
 	private static JavaPlugin plugin;
 	private String dataFile;
 	private FileConfiguration customConfig = null;

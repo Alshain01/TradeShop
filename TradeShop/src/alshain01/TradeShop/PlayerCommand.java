@@ -7,7 +7,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 /**
  * Self-cleaning class for storing pending commands
  */
-public class PlayerCommand extends BukkitRunnable {
+class PlayerCommand extends BukkitRunnable {
 	CommandAction action;
 	Player player;
 	Trade trade;
@@ -16,7 +16,7 @@ public class PlayerCommand extends BukkitRunnable {
 	 * Enumeration for describing the types 
 	 * of commands a player can queue. 
 	 */
-	public enum CommandAction {
+	protected enum CommandAction {
 		CREATE, ADD;
 	}
 	
@@ -37,7 +37,7 @@ public class PlayerCommand extends BukkitRunnable {
 	 * @param player The player to remove at a later time
 	 * @param action The command list to remove the player from.
 	 */	
-	public PlayerCommand(Plugin instance, Player player) {
+	protected PlayerCommand(Plugin instance, Player player) {
 		this.action = CommandAction.CREATE;
 		this.player = player;
 		this.trade = null;
@@ -52,7 +52,7 @@ public class PlayerCommand extends BukkitRunnable {
 	 * @param action The command list to remove the player from.
 	 * @param trade The trade data being created.
 	 */	
-	public PlayerCommand(Plugin instance, Player player, Trade trade) {
+	protected PlayerCommand(Plugin instance, Player player, Trade trade) {
 		this.action = CommandAction.ADD;
 		this.player = player;
 		this.trade = trade;
@@ -64,7 +64,7 @@ public class PlayerCommand extends BukkitRunnable {
 	 * 
 	 * @return The command action
 	 */
-	public CommandAction getAction() {
+	protected CommandAction getAction() {
 		return action;
 	}
 	
@@ -73,7 +73,7 @@ public class PlayerCommand extends BukkitRunnable {
 	 * 
 	 * @return The trade, null if not adding
 	 */
-	public Trade getTrade() {
+	protected Trade getTrade() {
 		return trade;
 	}
 	
@@ -81,7 +81,7 @@ public class PlayerCommand extends BukkitRunnable {
 	 * Removes a player command that has been processed
 	 * before the timeout occurs.
 	 */
-	public void remove() {
+	protected void remove() {
 		this.cancel();
 		TradeShop.instance.commandQueue.remove(player.getName());
 	}

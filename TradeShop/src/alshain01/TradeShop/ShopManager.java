@@ -1,8 +1,6 @@
 package alshain01.TradeShop;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -16,7 +14,7 @@ import alshain01.Flags.Flags;
 import alshain01.Flags.area.Area;
 import alshain01.TradeShop.PlayerCommand.CommandAction;
 
-public class ShopManager implements Listener {
+class ShopManager implements Listener {
 	/*
 	 *  Handles the creation of a shop
 	 */

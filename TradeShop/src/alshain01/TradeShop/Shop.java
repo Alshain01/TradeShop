@@ -39,6 +39,15 @@ public class Shop {
 		return openSlot;
 	}
 	
+	/**
+	 * Removes a trade based on its ID number
+	 * 
+	 * @param tradeID The chest slot ID of the trade item.
+	 */
+	public void removeTrade(int tradeID) {
+		trades.remove(tradeID);
+	}
+	
 	/*
 	 * Writes the shop to the data store
 	 */

@@ -197,13 +197,13 @@ public class TradeShop extends JavaPlugin {
 			ConfigurationSection shopDataStore = dataStore.getConfigurationSection(s);
 			Shop shop = new Shop(dataStore.getString("Owner"));
 			
-			for(String t :)
+			//for(String t :)
 			
 		}
 	}
 	
 	/*
-	 * Converts Location.toString back to Location
+	 * Converts Location.toString() back to Location
 	 * This is unguarded against improper strings
 	 */
 	private Location stringToLocation(String location) {
