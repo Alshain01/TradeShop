@@ -20,15 +20,16 @@ class ShopManager implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.MONITOR)
 	private static void onPlayerInteract(PlayerInteractEvent e) {
-		if(e.getAction() != Action.LEFT_CLICK_BLOCK) { return; }
+		TradeShop.instance.Debug("Shop Manager Create Event");
+		if(e.getAction() != Action.RIGHT_CLICK_BLOCK) { return; }
 		if(e.getClickedBlock().getType() != Material.CHEST) { return; }
 		
 		// Is the player in "creation mode"?
-		PlayerCommand command = TradeShop.instance.commandQueue.get(e.getPlayer().getName());
+		PlayerCommand command = TradeShop.commandQueue.get(e.getPlayer().getName());
 		if(command == null || command.action != CommandAction.CREATE) { return; }
 		
 		// Handle the shop creation flag
-		if(TradeShop.instance.flags) {
+		if(TradeShop.flags) {
 			Area a = Director.getAreaAt(e.getPlayer().getLocation());
 			Flag f = Flags.instance.getRegistrar().getFlag("TSAllowCreate");
 			
@@ -40,16 +41,15 @@ class ShopManager implements Listener {
 			}
 		}
 	
-		// Is that chest already a shop?
-		if(TradeShop.instance.shopData.containsKey(e.getClickedBlock().getLocation())) {
+		// Create the shop
+		if(!(new Shop(e.getClickedBlock().getLocation()).setOwner(e.getPlayer().getName()))) {
 			e.getPlayer().sendMessage(Message.ShopExistsError.get());
 			return;
 		}
 		
-		// Everything seems to be in order, create the shop.
-		TradeShop.instance.shopData.put(e.getClickedBlock().getLocation(), new Shop(e.getPlayer().getName()));
+		// Everything seems to be in order, clean up
 		e.getPlayer().sendMessage(Message.ShopCreated.get());
-		TradeShop.instance.commandQueue.get(e.getPlayer().getName()).remove();
+		TradeShop.commandQueue.get(e.getPlayer().getName()).remove();
 	}
 	
 	/*
@@ -58,11 +58,11 @@ class ShopManager implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	private static void onBlockBreak(BlockBreakEvent e) {
 		if(e.getBlock().getType() != Material.CHEST) { return; }
-		if(TradeShop.instance.adminMode.contains(e.getPlayer().getName())) { return; }
+		if(TradeShop.adminMode.contains(e.getPlayer().getName())) { return; }
 		
 		// Check to see if the chest is one that TradeShop claims domain over.
-		if(!TradeShop.instance.shopData.containsKey(e.getBlock().getLocation())) { return; }
-		Shop shop = TradeShop.instance.shopData.get(e.getBlock().getLocation());
+		Shop shop = new Shop(e.getBlock().getLocation());
+		if(!shop.exists()) { return; }
 		
 		// Check to see if the player can destroy this block
 		if(shop.getOwner().equals(e.getPlayer().getName())) { return; }
@@ -78,8 +78,6 @@ class ShopManager implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	private static void onBlockBroken(BlockBreakEvent e) {
-		if(!TradeShop.instance.shopData.containsKey(e.getBlock().getLocation())) { return; }
-		
-		TradeShop.instance.shopData.remove(e.getBlock().getLocation());
+		new Shop(e.getBlock().getLocation()).remove();
 	}
 }

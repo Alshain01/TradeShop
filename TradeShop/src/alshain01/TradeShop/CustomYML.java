@@ -1,8 +1,9 @@
 package alshain01.TradeShop;
 import java.io.*;
 import java.util.logging.Level;
+
 import org.bukkit.configuration.file.*;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 
 /**
  * Modified YAML manager from http://wiki.bukkit.org/Configuration_API_Reference
@@ -10,15 +11,15 @@ import org.bukkit.plugin.java.JavaPlugin;
  * @author bukkit.org
  */
 class CustomYML {
-	private static JavaPlugin plugin;
+	private static Plugin plugin;
 	private String dataFile;
 	private FileConfiguration customConfig = null;
 	private File customConfigFile = null;
 	
 
 	// Construct a new CustomYML file
-	protected CustomYML(JavaPlugin plugin, String dataFile){
-		CustomYML.plugin = plugin;
+	protected CustomYML(Plugin newPlugin, String dataFile){
+		plugin = newPlugin;
 		this.dataFile = dataFile;
 	}
 

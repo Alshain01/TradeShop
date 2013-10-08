@@ -1,0 +1,17 @@
+Message:
+  # Error Messages
+  NoConsoleError: '&cThis command cannot be performed from the console.'
+  InvalidMaterialError: '&c{Material} is not a valid material.'
+  ShopExistsError: '&cThat chest is already a TradeShop.'
+  TradeExistsError: '&cThat trade configuration already exists.'
+  RemoveShopError: '&cYou do not have permission to remove {Owner}''s shop.'
+  PermError: '&cYou do not have permissions to use that command.'
+  #Messages
+  CommandTimeout: '&e{Type} creation timed out.'
+  TradeRemoved: '&eTrade Removed'
+  TradeShopRemoved: '&eTradeShop Removed'
+  CreateMode: '&eRight click the chest you want to use as a TradeShop.'
+  AddMode: '&eAdd the item you want to trade to slot 1 through 9 of the TradeShop.'
+  ShopCreated: '&aShop Created'
+  EnterAdminMode: '&eNow in TradeShop administration mode.'
+  ExitAdminMode: '&eRemoved from TradeShop administration mode.'

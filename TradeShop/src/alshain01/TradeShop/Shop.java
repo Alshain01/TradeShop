@@ -1,22 +1,39 @@
 package alshain01.TradeShop;
 
-import java.util.Iterator;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.Location;
 
 public class Shop {
-
 	private ConcurrentHashMap<Integer, Trade> trades = new ConcurrentHashMap<Integer, Trade>();
-	private String owner;
+	private Location location;
 	
-	public Shop(String ownerName) {
-		this.owner = ownerName;
+	public Shop(Location location) {
+		this.location = location;
 	}
 	
 	public String getOwner() {
-		return this.owner;
+		return TradeShop.dataStore.getConfig().getString("Shops." + location.toString() + ".Owner");
+	}
+	
+	public boolean setOwner(String playerName) {
+		if(exists()) { return false; }
+		TradeShop.dataStore.getConfig().set("Shops." + location.toString() + ".Owner", playerName);
+		return true;
+	}
+	
+	public Location getLocation() {
+		return this.location;
+	}
+	
+	public boolean exists() {
+		return !(TradeShop.dataStore.getConfig().getString("Shops." + location.toString() + ".Owner") == null);
+	}
+	
+	public boolean remove() {
+		if(!exists()) { return false; }
+		TradeShop.dataStore.getConfig().set(location.toString(), null);
+		return true;
 	}
 	
 	/**
@@ -36,6 +53,7 @@ public class Shop {
 		}
 			
 		if(openSlot != -1) { trades.put(openSlot, newTrade); }
+		//this.write();
 		return openSlot;
 	}
 	
@@ -46,16 +64,19 @@ public class Shop {
 	 */
 	public void removeTrade(int tradeID) {
 		trades.remove(tradeID);
+		//this.write();
 	}
 	
-	/*
+/*	
 	 * Writes the shop to the data store
-	 */
-	protected void write(ConfigurationSection data) {
+	 
+	private void write() {
+		ConfigurationSection data = TradeShop.dataStore.getConfig().getConfigurationSection("Shops." + location.toString());
+		data.set("Owner", owner);
 		Iterator<Entry<Integer, Trade>> it = trades.entrySet().iterator();
 		while (it.hasNext()) {
 			Entry<Integer, Trade> trade = it.next();
 			((Trade)trade).write(data, trade.getKey().toString());
 		}			
-	}
+	}*/
 }

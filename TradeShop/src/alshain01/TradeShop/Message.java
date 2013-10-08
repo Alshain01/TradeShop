@@ -9,13 +9,13 @@ public enum Message {
 	// Errors
 	NoConsoleError, InvalidMaterialError, ShopExistsError, TradeExistsError, RemoveShopError, PermError,
 	CommandTimeout, TradeRemoved,
-	TradeShopRemoved, CreateMode, ModifyMode, ShopCreated, EnterAdminMode, ExitAdminMode;
+	TradeShopRemoved, CreateMode, AddMode, ShopCreated, EnterAdminMode, ExitAdminMode;
 	
 	/**
 	* @return A localized message for the enumeration.
 	*/
 	public final String get() {
-		String message = TradeShop.instance.messageReader.getConfig().getString("Message." + this.toString());
+		String message = TradeShop.messageReader.getConfig().getString("Message." + this.toString());
 		if (message == null) {
 			TradeShop.instance.getLogger().warning("ERROR: Invalid message.yml Message for " + this.toString());
 			return "ERROR: Invalid message.yml Message. Please contact your server administrator.";

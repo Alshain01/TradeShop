@@ -2,8 +2,6 @@ package alshain01.TradeShop;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,8 +11,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -24,18 +20,20 @@ import alshain01.Flags.Flags;
 
 public class TradeShop extends JavaPlugin {
 	public static TradeShop instance;
-	protected CustomYML messageReader = new CustomYML(this, "message.yml");
+	protected static CustomYML messageReader = new CustomYML(Bukkit.getServer().getPluginManager().getPlugin("TradeShop"), "message.yml");
+	protected static CustomYML dataStore = new CustomYML(Bukkit.getServer().getPluginManager().getPlugin("TradeShop"), "data.yml");
 
-	protected Set<String> adminMode = new HashSet<String>(); 
-	protected ConcurrentHashMap<Location, Shop> shopData = new ConcurrentHashMap<Location, Shop>();
-	protected ConcurrentHashMap<String, PlayerCommand> commandQueue = new ConcurrentHashMap<String, PlayerCommand>();
+	protected static Set<String> adminMode = new HashSet<String>(); 
+	//protected ConcurrentHashMap<Location, Shop> shopData = new ConcurrentHashMap<Location, Shop>();
+	protected static ConcurrentHashMap<String, PlayerCommand> commandQueue = new ConcurrentHashMap<String, PlayerCommand>();
 
-	protected boolean flags = false;
+	protected static boolean flags = false;
 		
 	@Override
 	public void onEnable() {
-		instance = this;
-		flags = Bukkit.getServer().getPluginManager().isPluginEnabled("Flags");
+		//instance = this;
+		messageReader.saveDefaultConfig();
+		flags = this.getServer().getPluginManager().isPluginEnabled("Flags");
 		if(flags) {
 			String plugin = this.getName();
 			Flags.instance.getRegistrar().register("TSAllowCreate", 
@@ -48,7 +46,7 @@ public class TradeShop extends JavaPlugin {
 					"\\{Player\\} You are not allowed to use a " + plugin + "in \\{World\\}");
 		}
 		
-		this.shopData = readShops();
+		this.getServer().getPluginManager().registerEvents(new ShopManager(), this);
 	}
 
 	@Override
@@ -60,8 +58,6 @@ public class TradeShop extends JavaPlugin {
 			cmd.cancel();
 		}
 		commandQueue.clear();
-		
-		writeShops();
 	}
 	
 	@Override
@@ -93,7 +89,7 @@ public class TradeShop extends JavaPlugin {
 				if (trade != null) {
 					
 					if(commandQueue.containsKey(player.getName())) { commandQueue.get(player.getName()).remove(); }
-					player.sendMessage(Message.ModifyMode.get());
+					player.sendMessage(Message.AddMode.get());
 					commandQueue.put(player.getName(), new PlayerCommand(this, player, trade));
 				}
 				return true;
@@ -176,48 +172,6 @@ public class TradeShop extends JavaPlugin {
 	}
 	
 	/*
-	 * Writes all shops in memory to the dataStore
-	 */
-	private void writeShops() {
-		FileConfiguration shopDataStore = new CustomYML(this, "data.yml").getConfig();
-		shopDataStore.set("Shop", null);
-		
-		Iterator<Entry<Location, Shop>> it = shopData.entrySet().iterator();
-		while (it.hasNext()) {
-			Entry<Location, Shop> shop = it.next();
-			((Shop)shop).write(shopDataStore.getConfigurationSection("Shop." + shop.getKey().toString()));
-		}
-	}
-	
-	/*
-	 * Reads all shops into memory.
-	 */
-	private ConcurrentHashMap<Location, Shop> readShops() {
-		ConcurrentHashMap<Location, Shop> shopData = new ConcurrentHashMap<Location, Shop>();
-		ConfigurationSection dataStore = new CustomYML(this, "data.yml").getConfig().getConfigurationSection("Shop");
-		
-		for(String s : dataStore.getKeys(false)) {
-			Location location = stringToLocation(s);
-			ConfigurationSection shopDataStore = dataStore.getConfigurationSection(s);
-			Shop shop = new Shop(shopDataStore.getString("Owner"));
-			
-			for(String t : shopDataStore.getKeys(false)) {
-				if(t.equals("Owner")) { continue; }
-				List<Map<?,?>> tradeMap = shopDataStore.getMapList(t);
-				for(int x = 0; x < 3; x++) {
-					@SuppressWarnings("unchecked")
-					Trade trade = new Trade((ItemStack.deserialize((Map<String, Object>)tradeMap.get(x).get(0))),
-							(ItemStack.deserialize((Map<String, Object>)tradeMap.get(x).get(1))),
-							(ItemStack.deserialize((Map<String, Object>)tradeMap.get(x).get(2))));
-					shop.addTrade(trade);
-				}
-			}
-			shopData.put(location, shop);
-		}
-		return shopData;
-	}
-	
-	/*
 	 * Converts Location.toString() back to Location
 	 * This is unguarded against improper strings
 	 */
@@ -228,5 +182,9 @@ public class TradeShop extends JavaPlugin {
 			values[i] = elements[i].split("=")[1]; 
 		}
 		return new Location(this.getServer().getWorld(values[0]), Double.valueOf(values[1]), Double.valueOf(values[2]), Double.valueOf(values[3]), Float.valueOf(values[4]), Float.valueOf(values[5]));
+	}
+	
+	public void Debug(String message) {
+		instance.getLogger().info("[DEBUG] " + message);
 	}
 }

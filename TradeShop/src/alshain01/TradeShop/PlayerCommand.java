@@ -27,7 +27,7 @@ class PlayerCommand extends BukkitRunnable {
 	@Override
 	public void run() {
 		player.sendMessage(Message.CommandTimeout.get());
-		TradeShop.instance.commandQueue.remove(player.getName());
+		TradeShop.commandQueue.remove(player.getName());
 	}
 	
 	/**
@@ -83,6 +83,6 @@ class PlayerCommand extends BukkitRunnable {
 	 */
 	protected void remove() {
 		this.cancel();
-		TradeShop.instance.commandQueue.remove(player.getName());
+		TradeShop.commandQueue.remove(player.getName());
 	}
 }
