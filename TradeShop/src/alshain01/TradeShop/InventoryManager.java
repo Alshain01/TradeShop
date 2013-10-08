@@ -32,7 +32,7 @@ class InventoryManager implements Listener {
 		Block block = (Block)inventory.getHolder();
 		if(block.getType() != Material.CHEST) { return false; }
 		
-		return TradeShop.instance.shopData.containsKey(block.getLocation().toString());
+		return new Shop(block.getLocation()).exists();
 	}
 	
 	/*
@@ -50,14 +50,13 @@ class InventoryManager implements Listener {
 	private static void onInventoryOpenEvent(InventoryOpenEvent e) {
 		if(!isTradeShop(e.getInventory())) { return; }
 		
-		Chest shop = (Chest)e.getInventory().getHolder();
-		Shop shopData = TradeShop.instance.shopData.get(shop.getLocation());
+		Shop data = new Shop(((Chest)e.getInventory().getHolder()).getLocation());
 		
 		// If the player is the owner or in admin mode then don't show the trade window.
-		if(!TradeShop.instance.adminMode.contains(e.getPlayer().getName()) && (shopData.getOwner() != e.getPlayer().getName())) {
+		if(!TradeShop.adminMode.contains(e.getPlayer().getName()) && (data.getOwner() != e.getPlayer().getName())) {
 
 			// Handle the trade flag here
-			if(TradeShop.instance.flags) {
+			if(TradeShop.flags) {
 				Area a = Director.getAreaAt(e.getPlayer().getLocation());
 				Flag f = Flags.instance.getRegistrar().getFlag("TSAllowTrade");
 				
@@ -92,8 +91,8 @@ class InventoryManager implements Listener {
 		}
 		
 		// Is the player trying to create a trade?
-		if(!TradeShop.instance.commandQueue.contains(e.getWhoClicked().getName()) 
-				|| TradeShop.instance.commandQueue.get(e.getWhoClicked().getName()).getAction() != CommandAction.ADD)
+		if(!TradeShop.commandQueue.contains(e.getWhoClicked().getName()) 
+				|| TradeShop.commandQueue.get(e.getWhoClicked().getName()).getAction() != CommandAction.ADD)
 		{
 			e.setCancelled(true);
 			return;
@@ -108,9 +107,10 @@ class InventoryManager implements Listener {
 		}
 		
 		// Add the trade
-		Trade trade = TradeShop.instance.commandQueue.get(e.getWhoClicked().getName()).getTrade();
+		Shop shop = new Shop(((Chest)e.getInventory().getHolder()).getLocation());
+		Trade trade = TradeShop.commandQueue.get(e.getWhoClicked().getName()).getTrade();
 		trade.setSellItem(e.getCursor());
-		TradeShop.instance.shopData.get(((Chest)e.getInventory().getHolder()).getLocation()).addTrade(trade);
+		shop.addTrade(trade);
 	}
 	
 	/*
@@ -123,12 +123,11 @@ class InventoryManager implements Listener {
 		// Thanks to the onInventoryAdd, we can't be here if they aren't picking up an item stack.
 		// If it's in the first 9 slots, it is a trade item.
 		if(e.getSlot() < 8) {
-			Chest shop = (Chest)e.getInventory().getHolder();
-			Shop shopData = TradeShop.instance.shopData.get(shop.getLocation());
+			Shop data = new Shop(((Chest)e.getInventory().getHolder()).getLocation());
 			
 			// The item slot was an assigned trade, so remove it.
 			((Player)e.getWhoClicked()).sendMessage(Message.TradeRemoved.get());
-			shopData.removeTrade(e.getSlot());
+			data.removeTrade(e.getSlot());
 		}
 		// The item slot was most likely the sale valuables.  We do nothing.
 	}

@@ -18,7 +18,7 @@ class ShopManager implements Listener {
 	/*
 	 *  Handles the creation of a shop
 	 */
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.LOWEST)
 	private static void onPlayerInteract(PlayerInteractEvent e) {
 		TradeShop.instance.Debug("Shop Manager Create Event");
 		if(e.getAction() != Action.RIGHT_CLICK_BLOCK) { return; }
@@ -50,6 +50,7 @@ class ShopManager implements Listener {
 		// Everything seems to be in order, clean up
 		e.getPlayer().sendMessage(Message.ShopCreated.get());
 		TradeShop.commandQueue.get(e.getPlayer().getName()).remove();
+		e.setCancelled(true);
 	}
 	
 	/*

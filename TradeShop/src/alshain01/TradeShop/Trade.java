@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -22,6 +21,22 @@ public class Trade {
 	public Trade(ItemStack buyItem1, ItemStack buyItem2) {
 		this.tradeItems[0] = buyItem1;
 		this.tradeItems[1] = buyItem2;
+	}
+	
+	/**
+	 * Creates a new trade from a serialized map list
+	 * 
+	 * @param items Map list to deserialize
+	 */
+	@SuppressWarnings("unchecked")
+	//TODO Remove suppress warnings.  
+	// Should be ok for now, we are writing the database so we know what is coming back.
+	protected Trade(List<Map<?, ?>> items) {
+		int i = 0;
+		for(Map<?, ?> m : items) {
+			tradeItems[i] = ItemStack.deserialize((Map<String, Object>) m);
+			i++;
+		}
 	}
 	
 	/**
@@ -72,14 +87,18 @@ public class Trade {
 		return false;
 	}
 	
-	/*
-	 * Writes the trade to the provided configuration section
+	/**
+	 * Returns a serialized map list of item stacks in order by their slot ID in the trade window.
+	 *
+	 * @return The list of items stacks involved with the trade
 	 */
-	protected void write(ConfigurationSection data, String path) {
+	public List<Map<String, Object>> getItems() {
 		List<Map<String, Object>> tradeList = new ArrayList<Map<String, Object>>();
+		
 		for(ItemStack i : tradeItems) {
 			tradeList.add(i.serialize());
 		}
-		data.set(path, tradeList);
+		
+		return tradeList;
 	}
 }

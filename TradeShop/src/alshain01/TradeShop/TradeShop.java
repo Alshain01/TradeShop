@@ -37,13 +37,13 @@ public class TradeShop extends JavaPlugin {
 		if(flags) {
 			String plugin = this.getName();
 			Flags.instance.getRegistrar().register("TSAllowCreate", 
-					"Allows the creation of a " + plugin + " shop.", false, plugin,
-					"\\{Player\\} You are not allowed to create a " + plugin + "in \\{Owner\\}''s \\{AreaType\\}.",
-					"\\{Player\\} You are not allowed to create a " + plugin + "in \\{World\\}");
+					Message.FlagsCreateDescription.get(), false, plugin,
+					Message.FlagsCreateArea.get(),
+					Message.FlagsCreateWorld.get());
 			Flags.instance.getRegistrar().register("TSAllowTrade", 
-	                "Allows players to use a " + plugin + "shop.", true, plugin,
-	                "\\{Player\\} You are not allowed to use a " + plugin + "in \\{Owner\\}''s \\{AreaType\\}.",
-					"\\{Player\\} You are not allowed to use a " + plugin + "in \\{World\\}");
+	                Message.FlagsTradeDescription.get(), true, plugin,
+	                Message.FlagsTradeArea.get(),
+					Message.FlagsTradeWorld.get());
 		}
 		
 		this.getServer().getPluginManager().registerEvents(new ShopManager(), this);
@@ -169,19 +169,6 @@ public class TradeShop extends JavaPlugin {
 	private static String getHelp(String action) {
 		if(action.equalsIgnoreCase("add")) { return "/tradeshop add <BuyMaterial> <BuyQuantity> [BuyMaterial] [BuyQuantity]"; }
 		else { return "/tradeshop remove <id>"; }
-	}
-	
-	/*
-	 * Converts Location.toString() back to Location
-	 * This is unguarded against improper strings
-	 */
-	private Location stringToLocation(String location) {
-		String[] elements = location.split(",");
-		String[] values = new String[elements.length];
-		for(int i=0; i < elements.length; i++) {
-			values[i] = elements[i].split("=")[1]; 
-		}
-		return new Location(this.getServer().getWorld(values[0]), Double.valueOf(values[1]), Double.valueOf(values[2]), Double.valueOf(values[3]), Float.valueOf(values[4]), Float.valueOf(values[5]));
 	}
 	
 	public void Debug(String message) {

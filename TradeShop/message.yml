@@ -15,3 +15,10 @@ Message:
   ShopCreated: '&aShop Created'
   EnterAdminMode: '&eNow in TradeShop administration mode.'
   ExitAdminMode: '&eRemoved from TradeShop administration mode.'
+  #Flags
+  FlagsCreateDescription: 'Allows the creation of a TradeShop.
+  FlagsCreateArea: '{Player}, you are not allowed to create a TradeShop in {Owner}''s {AreaType}.'
+  FlagsCreateWorld: '{Player}, you are not allowed to create a TradeShop in {World}.'
+  FlagsTradeDescription: 'Allows players to use a TradeShop.
+  FlagsTradeArea: '{Player}, you are not allowed to use a TradeShop in {Owner}''s {AreaType}.'
+  FlagsTradeWorld: '{Player}, you are not allowed to use a TradeShop in {World}.'
