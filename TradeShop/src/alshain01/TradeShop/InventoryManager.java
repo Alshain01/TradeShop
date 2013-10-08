@@ -1,5 +1,6 @@
 package alshain01.TradeShop;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
@@ -11,6 +12,7 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 
 import alshain01.Flags.Director;
@@ -70,6 +72,8 @@ class InventoryManager implements Listener {
 			}
 			
 			e.setCancelled(true);
+			
+			Inventory i = Bukkit.createInventory(null, InventoryType.MERCHANT);
 			// TODO Open trade window here
 		}
 	}
