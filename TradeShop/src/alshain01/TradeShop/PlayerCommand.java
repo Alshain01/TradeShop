@@ -17,7 +17,7 @@ class PlayerCommand extends BukkitRunnable {
 	 * of commands a player can queue. 
 	 */
 	protected enum CommandAction {
-		CREATE, ADD;
+		CREATE, SALESMAN, ADD;
 	}
 	
 	/**
@@ -37,8 +37,8 @@ class PlayerCommand extends BukkitRunnable {
 	 * @param player The player to remove at a later time
 	 * @param action The command list to remove the player from.
 	 */	
-	protected PlayerCommand(Plugin instance, Player player) {
-		this.action = CommandAction.CREATE;
+	protected PlayerCommand(Plugin instance, Player player, CommandAction action) {
+		this.action = action;
 		this.player = player;
 		this.trade = null;
 		this.runTaskLaterAsynchronously(instance, TradeShop.instance.getConfig().getConfigurationSection("TradeShop").getLong("CommandTimeout"));

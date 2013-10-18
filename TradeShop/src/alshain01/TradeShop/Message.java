@@ -9,7 +9,7 @@ public enum Message {
 	// Errors
 	NoConsoleError, InvalidMaterialError, ShopExistsError, TradeExistsError, RemoveShopError, PermError,
 	CommandTimeout, TradeRemoved,
-	TradeShopRemoved, CreateMode, AddMode, ShopCreated, EnterAdminMode, ExitAdminMode,
+	TradeShopRemoved, CreateShopMode, CreateRepoMode, CreateSalesmanMode, AddMode, ShopCreated, EnterAdminMode, ExitAdminMode,
 	FlagsCreateDescription, FlagsCreateArea, FlagsCreateWorld, FlagsTradeDescription, FlagsTradeWorld, FlagsTradeArea;
 	
 	/**

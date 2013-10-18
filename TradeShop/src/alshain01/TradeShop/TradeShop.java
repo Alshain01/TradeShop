@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import alshain01.Flags.Flags;
+import alshain01.TradeShop.PlayerCommand.CommandAction;
 
 
 public class TradeShop extends JavaPlugin {
@@ -23,7 +24,6 @@ public class TradeShop extends JavaPlugin {
 	protected static CustomYML dataStore = new CustomYML(Bukkit.getServer().getPluginManager().getPlugin("TradeShop"), "data.yml");
 
 	protected static Set<String> adminMode = new HashSet<String>(); 
-	//protected ConcurrentHashMap<Location, Shop> shopData = new ConcurrentHashMap<Location, Shop>();
 	protected static ConcurrentHashMap<String, PlayerCommand> commandQueue = new ConcurrentHashMap<String, PlayerCommand>();
 
 	protected static boolean flags = false;
@@ -70,15 +70,13 @@ public class TradeShop extends JavaPlugin {
 		
 		if(cmd.getName().equalsIgnoreCase("tradeshop")) {
 			if(args[0].equalsIgnoreCase("create")) {
-				
 				/*
 				 *  Add the creation to the queue
 				 */
 				if(commandQueue.containsKey(player.getName())) { commandQueue.get(player.getName()).remove(); }
-				player.sendMessage(Message.CreateMode.get());
-				commandQueue.put(player.getName(), new PlayerCommand(this, player));
+				player.sendMessage(Message.CreateShopMode.get());
+				commandQueue.put(player.getName(), new PlayerCommand(this, player, CommandAction.CREATE));
 				return true;
-				
 			} else if (args[0].equalsIgnoreCase("add")) {
 				
 				/*

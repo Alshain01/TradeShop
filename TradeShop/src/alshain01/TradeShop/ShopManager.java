@@ -1,6 +1,7 @@
 package alshain01.TradeShop;
 
 import org.bukkit.Material;
+import org.bukkit.block.Chest;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -27,6 +28,8 @@ class ShopManager implements Listener {
 		// Is the player in "creation mode"?
 		PlayerCommand command = TradeShop.commandQueue.get(e.getPlayer().getName());
 		if(command == null || command.action != CommandAction.CREATE) { return; }
+
+
 		
 		// Handle the shop creation flag
 		if(TradeShop.flags) {
@@ -41,14 +44,20 @@ class ShopManager implements Listener {
 			}
 		}
 	
-		// Create the shop
-		if(!(new Shop(e.getClickedBlock().getLocation()).setOwner(e.getPlayer().getName()))) {
-			e.getPlayer().sendMessage(Message.ShopExistsError.get());
-			return;
+		if (((Chest)e.getClickedBlock()).getBlockInventory().getSize() == 27) {
+			// Create the shop
+			if(!(new Shop(e.getClickedBlock().getWorld().getName(), e.getPlayer().getName()).setStockLocation(e.getClickedBlock().getLocation().toVector()))) {
+				e.getPlayer().sendMessage(Message.ShopExistsError.get());
+				return;
+			}
+		
+			e.getPlayer().sendMessage(Message.ShopCreated.get());
+		} else {
+			// Create the repository
+			
 		}
 		
-		// Everything seems to be in order, clean up
-		e.getPlayer().sendMessage(Message.ShopCreated.get());
+		
 		TradeShop.commandQueue.get(e.getPlayer().getName()).remove();
 		e.setCancelled(true);
 	}
@@ -62,8 +71,8 @@ class ShopManager implements Listener {
 		if(TradeShop.adminMode.contains(e.getPlayer().getName())) { return; }
 		
 		// Check to see if the chest is one that TradeShop claims domain over.
-		Shop shop = new Shop(e.getBlock().getLocation());
-		if(!shop.exists()) { return; }
+		Shop shop = Shop.getAt(e.getBlock().getLocation());
+		if(shop == null) { return; }
 		
 		// Check to see if the player can destroy this block
 		if(shop.getOwner().equals(e.getPlayer().getName())) { return; }
@@ -79,6 +88,7 @@ class ShopManager implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	private static void onBlockBroken(BlockBreakEvent e) {
-		new Shop(e.getBlock().getLocation()).remove();
+		Shop shop = Shop.getAt(e.getBlock().getLocation());
+		if(shop != null) { shop.remove(); }
 	}
 }

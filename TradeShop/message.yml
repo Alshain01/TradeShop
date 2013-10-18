@@ -10,15 +10,16 @@ Message:
   CommandTimeout: '&e{Type} creation timed out.'
   TradeRemoved: '&eTrade Removed'
   TradeShopRemoved: '&eTradeShop Removed'
-  CreateMode: '&eRight click the chest you want to use as a TradeShop.'
+  CreateShopMode: '&eRight click the chest you want to use as a TradeShop.'
+  CreateRepoMode: '&eRight click the chest you want to use as a TradeShop repository.'
   AddMode: '&eAdd the item you want to trade to slot 1 through 9 of the TradeShop.'
   ShopCreated: '&aShop Created'
   EnterAdminMode: '&eNow in TradeShop administration mode.'
   ExitAdminMode: '&eRemoved from TradeShop administration mode.'
   #Flags
-  FlagsCreateDescription: 'Allows the creation of a TradeShop.
+  FlagsCreateDescription: 'Allows the creation of a TradeShop.'
   FlagsCreateArea: '{Player}, you are not allowed to create a TradeShop in {Owner}''s {AreaType}.'
   FlagsCreateWorld: '{Player}, you are not allowed to create a TradeShop in {World}.'
-  FlagsTradeDescription: 'Allows players to use a TradeShop.
+  FlagsTradeDescription: 'Allows players to use a TradeShop.'
   FlagsTradeArea: '{Player}, you are not allowed to use a TradeShop in {Owner}''s {AreaType}.'
   FlagsTradeWorld: '{Player}, you are not allowed to use a TradeShop in {World}.'
