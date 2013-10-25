@@ -34,10 +34,10 @@ class ShopManager implements Listener {
 		// Handle the shop creation flag
 		if(TradeShop.flags) {
 			Area a = Director.getAreaAt(e.getPlayer().getLocation());
-			Flag f = Flags.instance.getRegistrar().getFlag("TSAllowCreate");
+			Flag f = Flags.getRegistrar().getFlag("TSAllowCreate");
 			
 			if(!a.getValue(f, false)
-					&& !f.hasBypassPermission(e.getPlayer()) 
+					&& !e.getPlayer().hasPermission(f.getBypassPermission()) 
 					&& !a.getTrustList(f).contains(e.getPlayer().getName())) { 
 				e.getPlayer().sendMessage(a.getMessage(f).replaceAll("\\{Player\\}", e.getPlayer().getName()));
 				return;

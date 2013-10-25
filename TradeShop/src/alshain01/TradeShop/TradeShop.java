@@ -35,11 +35,11 @@ public class TradeShop extends JavaPlugin {
 		flags = this.getServer().getPluginManager().isPluginEnabled("Flags");
 		if(flags) {
 			String plugin = this.getName();
-			Flags.instance.getRegistrar().register("TSAllowCreate", 
+			Flags.getRegistrar().register("TSAllowCreate", 
 					Message.FlagsCreateDescription.get(), false, plugin,
 					Message.FlagsCreateArea.get(),
 					Message.FlagsCreateWorld.get());
-			Flags.instance.getRegistrar().register("TSAllowTrade", 
+			Flags.getRegistrar().register("TSAllowTrade", 
 	                Message.FlagsTradeDescription.get(), true, plugin,
 	                Message.FlagsTradeArea.get(),
 					Message.FlagsTradeWorld.get());

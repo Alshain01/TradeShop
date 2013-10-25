@@ -58,10 +58,10 @@ class InventoryManager implements Listener {
 			// Handle the trade flag here
 			if(TradeShop.flags) {
 				Area a = Director.getAreaAt(e.getPlayer().getLocation());
-				Flag f = Flags.instance.getRegistrar().getFlag("TSAllowTrade");
+				Flag f = Flags.getRegistrar().getFlag("TSAllowTrade");
 				
 				if(!a.getValue(f, false)
-						&& !f.hasBypassPermission((Player)e.getPlayer()) 
+						&& !e.getPlayer().hasPermission(f.getBypassPermission()) 
 						&& !a.getTrustList(f).contains(e.getPlayer().getName())) { 
 					((Player)e.getPlayer()).sendMessage(a.getMessage(f).replaceAll("\\{Player\\}", e.getPlayer().getName()));
 					e.setCancelled(true);
